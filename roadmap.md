@@ -518,34 +518,7 @@ Skill Updater flag → appends to stale_skills.json
 | Scheduling | Manual CLI trigger | GitHub Actions cron / n8n workflow |
 
 ---
-
-## System Relationship Map (Full Loop)
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        FULL SYSTEM LOOP                          │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  Skills Core ──────────────────────────────────────────────┐    │
-│      ↑ written by Skill Updater                            │    │
-│      │ read by Skill Bot                                   ▼    │
-│      │ read by PR Dashboard ←──── Phase 1 (this roadmap)       │
-│      │                                                          │
-│  PR Dashboard                                                    │
-│      → detects merged PRs that change features                  │
-│      → emits stale_skills.json ──────────────────────────────► │
-│                                          Skill Updater          │
-│                                              → searches Discord  │
-│                                              → updates Skills    │
-│                                                Core ────────────┘│
-│                                                                  │
-│  Discord discussions                                             │
-│      → consumed by Skill Updater (knowledge)                    │
-│      → consumed by PR Dashboard (PR conflict context)           │
-│      → consumed by Skill Bot (Q&A)                              │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
+![alt text](public/image-6.png)
 
 ---
 

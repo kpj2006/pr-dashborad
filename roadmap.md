@@ -70,6 +70,8 @@ The following screenshots show the full run from extraction to maintainer-facing
 
     Independent PRs are shown as separate cards with concise impact summaries, review prompts, and expected outcomes so maintainers can merge low-risk work without waiting on conflict-heavy threads.
 
+**Tutorial**:https://youtu.be/h5Vv0vE19X4
+
 **Current limitations which covers in this roadmap:**
 
 - `context.md` is manually written — not sourced from Skills Core
@@ -88,7 +90,7 @@ The following screenshots show the full run from extraction to maintainer-facing
 
 **Tasks:**
 
-- [ ] Handle PRs with no CodeRabbit comment gracefully — fallback to PR body + title
+- [ ] Handle PRs with no CodeRabbit comment gracefully with a time limit — fallback to PR body + title
 - [ ] Retry logic for Ollama calls (currently crashes on timeout)
 - [ ] Persistent run cache — skip re-embedding PRs already processed in last N hours
 - [ ] Switch production default from `state=closed` (testing) to `state=open`
@@ -183,6 +185,7 @@ Analyze the conflict, recommend merge order, identify the best approach.
 
 The Skills Core contains architecture decisions, edge cases, and workflow constraints that `context.md` never had. Injecting it makes Ollama conflict reasoning grounded in validated knowledge — not guesswork.
 
+![alt text](public/image-0.png)
 ---
 
 ## Phase 2 — Discord Context Injection
@@ -245,6 +248,9 @@ prompt = f"""
 
 Maintainers often resolve intent in Discord before a PR is even reviewed. Injecting that discussion closes the gap between "what the code says" and "what the maintainer actually wants."
 
+* see a tutorial of API usage of discord: https://www.youtube.com/shorts/J2v2EvsXbAc
+
+![alt text](public/image-1.png)
 ---
 
 ## Phase 3 — NLI Precision Layer
@@ -254,6 +260,8 @@ Maintainers often resolve intent in Discord before a PR is even reviewed. Inject
 **Goal:** Add a Natural Language Inference (NLI) cross-encoder to classify each PR pair as `duplicate / conflict / isolated` with higher precision than cosine similarity alone.
 
 **Model:** `cross-encoder/nli-deberta-v3-small` (~180MB, CPU-compatible)
+
+>same as we are doing in Skill Updater for Discord message clustering, we will use a cross-encoder NLI model to classify PR pairs that exceed the cosine similarity threshold. This adds a critical precision layer — distinguishing true conflicts from false positives.
 
 **Current flow:**
 ```
@@ -298,6 +306,8 @@ def classify_pair(pr_a_summary: str, pr_b_summary: str) -> str:
 | False positives from high cosine on unrelated topic | Filtered out as `independent` |
 
 **Render update:** `conflicts_tree.html` DAG now shows edge labels — `CONFLICT` (red) vs `DUPLICATE` (purple) — based on NLI output, not just cluster membership.
+
+![alt text](public/image-2.png)
 
 ---
 
@@ -364,7 +374,7 @@ PR merged (PR Dashboard)
             → Skill Bot gives better answers
             → PR Dashboard gets better context next cycle
 ```
-
+![alt text](public/image-3.png)
 ---
 
 ## Phase 5 — Merge Order Export + GitHub Integration
@@ -455,6 +465,7 @@ def find_cross_repo_conflicts(new_pr_embedding, source_repo):
 
 **Output:** Extended `conflicts_tree.html` that shows cross-repo edges — e.g., "PR #12 in CarbonFootprint conflicts with PR #8 in Agora-Blockchain because both modify shared rate-limit infrastructure."
 
+![alt text](public/image-4.png)
 ---
 
 ## Phase 7 — Human-in-the-Loop Review Interface
@@ -487,6 +498,7 @@ Skill Updater flag → appends to stale_skills.json
 - Dismissal reasons logged → used to improve Ollama prompts in next iteration
 - Shares the same FastAPI server as Skill Updater's review dashboard (single unified maintainer UI)
 
+![alt text](public/image-5.png)
 ---
 
 ## Technology Stack Summary
@@ -547,22 +559,6 @@ Skill Updater flag → appends to stale_skills.json
 6. **Signal emitter** — PR Dashboard actively feeds back to Skill Updater, not passive consumer
 7. **Incremental, not batch** — new PRs extend the analysis, never trigger full re-run
 
----
-
-## Roadmap Phase Summary
-
-| Phase | Goal | System Integration |
-|---|---|---|
-| **0** | Stability hardening, caching, validation | Internal |
-| **1** | Replace `context.md` with live Skills Core | Consumes Skills Core |
-| **2** | Inject Discord maintainer context into PR analysis | Consumes Discord (like Skill Bot) |
-| **3** | NLI precision layer — `duplicate / conflict / independent` | Internal |
-| **4** | Stale skill detection → emit signal to Skill Updater | **Writes to Skill Updater** |
-| **5** | Merge order export + GitHub comment integration | GitHub API |
-| **6** | Multi-repo intelligence at AOSSIE scale | Cross-repo Skills Core |
-| **7** | Unified human-in-the-loop review dashboard | Shared with Skill Updater UI |
-
----
 
 ## References
 

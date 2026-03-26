@@ -210,9 +210,7 @@ pr-dashboard/
 ---
 
 ## Roadmap
-
+- [ ] fetch all unread messages from discord also just like i did in https://github.com/kpj2006/skill-bot-ask-ai- (for better context).
 - [ ] **NLI layer** — `cross-encoder/nli-deberta-v3-small` to label each pair as `duplicate / conflict / isolated` with higher precision than cosine threshold
-- [ ] **Query-conditioned NLI** — pass `context.md` as conditioning query so comparisons are judged *with respect to the repo's architecture*, not generically
-- [ ] **Switch to open PRs** for production use
 - [ ] **Merge order export** — output a `merge_order.md` Bruno can follow directly
 - [ ] **GitHub comment integration** — post analysis as a PR comment (optional, keeps everything local by default)

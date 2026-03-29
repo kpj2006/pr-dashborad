@@ -420,6 +420,7 @@ if args.post_comments:
 
 **Design constraint:** GitHub comment posting is always opt-in via CLI flag. Default behavior stays local — no data leaves the machine unless maintainer explicitly requests it.
 
+### NOTE: Phase 4 (Stale Skill Detection) emits signals to Skill Updater. Full utilization of these signals in cross-repository intelligence workflows is planned in Skill Updater Phase 5, which is scoped to be implemented ahead of schedule, or it can be future work (next GSoC scope).
 ---
 
 ## Phase 6 — Multi-Repo Intelligence + AOSSIE Scale
